@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/hex"
+	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -19,7 +20,12 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 )
 
-var bootnode = "enode://4e5e92199ee224a01932a377160aa432f31d0b351f84ab413a8e0a42f4f36476f8fb1cbe914af0d9aef0d51665c214cf653c651c4bbd9d5550a934f241f1682b@138.197.51.181:30303"
+var bootnode string
+
+func init() {
+	flag.StringVar(&bootnode, "bootnode", "", "Bootnode to connect to. in enode:// format.")
+	flag.Parse()
+}
 
 func main() {
 
@@ -28,21 +34,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse bootnode: %s", err.Error())
 	}
-
 	// start ephemeral discovery node.
 	disc, _ := startV4("", bootnode, "", "")
 	defer disc.Close()
 
-	// resolve node.
-	// resolvedNode := disc.Resolve(TargetNode)
-	// if resolvedNode != nil {
-	// 	log.Println("Found node:", resolvedNode.String())
-	// } else {
-	// 	log.Println("No node found with the target ID.")
-	// }
-	// Discover neighbors of a node.
 	neighbors := disc.LookupPubkey(TargetNode.Pubkey())
-	fmt.Printf("Found %v neighbors.\n", len(neighbors))
 	for _, neighbor := range neighbors {
 		fmt.Println(neighbor.String())
 	}
