@@ -19,7 +19,7 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 )
 
-var bootnode = "enr:-KG4QOtcP9X1FbIMOe17QNMKqDxCpm14jcX5tiOE4_TyMrFqbmhPZHK_ZPG2Gxb1GE2xdtodOfx9-cgvNtxnRyHEmC0ghGV0aDKQ9aX9QgAAAAD__________4JpZIJ2NIJpcIQDE8KdiXNlY3AyNTZrMaEDhpehBDbZjM_L9ek699Y7vhUJ-eAdMyQW_Fil522Y0fODdGNwgiMog3VkcIIjKA"
+var bootnode = "enode://4e5e92199ee224a01932a377160aa432f31d0b351f84ab413a8e0a42f4f36476f8fb1cbe914af0d9aef0d51665c214cf653c651c4bbd9d5550a934f241f1682b@138.197.51.181:30303"
 
 func main() {
 	// marshal node into usable enode struct.
@@ -33,11 +33,17 @@ func main() {
 	defer disc.Close()
 
 	// resolve node.
-	resolvedNode := disc.Resolve(TargetNode)
-	if resolvedNode != nil {
-		log.Println("Found node:", resolvedNode.String())
-	} else {
-		log.Println("No node found with the target ID.")
+	// resolvedNode := disc.Resolve(TargetNode)
+	// if resolvedNode != nil {
+	// 	log.Println("Found node:", resolvedNode.String())
+	// } else {
+	// 	log.Println("No node found with the target ID.")
+	// }
+	// Discover neighbors of a node.
+	neighbors := disc.LookupPubkey(TargetNode.Pubkey())
+	fmt.Printf("Found %v neighbors: %s\n", len(neighbors), neighbors)
+	for _, neighbor := range neighbors {
+		fmt.Println(neighbor.String())
 	}
 }
 
